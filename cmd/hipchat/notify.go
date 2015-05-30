@@ -18,7 +18,7 @@ type Notify struct {
 var notifyOptions Notify
 
 func init() {
-	if _, err := optionsParser.AddCommand("notify", "send room notification", "send a room notification", &notifyOptions); err != nil {
+	if _, err := optionsParser.AddCommand("notify", "send room notification", "", &notifyOptions); err != nil {
 		log.Fatal(err)
 	}
 }

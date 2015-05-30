@@ -31,6 +31,7 @@ var globalOptions Options
 var optionsParser = flags.NewNamedParser("hipchat", flags.Default)
 
 func init() {
+	optionsParser.ShortDescription = "a cli for hipchat"
 	optionsParser.AddGroup("Global options", "", &globalOptions)
 }
 
