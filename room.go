@@ -2,9 +2,8 @@ package hipchat
 
 import (
 	"fmt"
+	"io"
 	"time"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
 type Room struct {
@@ -47,6 +46,11 @@ type Room struct {
 	client *Client
 }
 
+type roomResponse struct {
+	*Room
+	*Error `json:"error"`
+}
+
 func (r Room) String() string {
 	return r.Name
 }
@@ -57,10 +61,23 @@ func (r *Room) HistoryFrom(from time.Time) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	spew.Dump(result)
 	return result, nil
 }
 
 func (r *Room) History() (interface{}, error) {
 	return r.HistoryFrom(time.Now().UTC())
+}
+
+// SendNotification sends a notification the the room
+func (r *Room) SendNotification(message string, color Color) error {
+	result := map[string]interface{}{}
+	options := map[string]interface{}{
+		"message": message,
+		"color":   color,
+	}
+	err := r.client.post(fmt.Sprintf("room/%d/notification", r.ID), options, &result)
+	if err == io.EOF {
+		return nil
+	}
+	return err
 }

@@ -34,8 +34,11 @@ type User struct {
 	XmppJid  string `json:"xmpp_jid"`
 }
 
-/*
+type userResponse struct {
+	*User
+	*Error `json:"error"`
+}
+
 func (u User) String() string {
 	return u.Name
 }
-*/

@@ -46,6 +46,7 @@ func (c *Client) prepRequest(method, url string, body io.Reader) (*http.Request,
 		return nil, err
 	}
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.authToken))
+	req.Header.Add("Content-Type", "application/json")
 	return req, nil
 }
 
@@ -63,11 +64,10 @@ func (c *Client) do(method, endpoint string, body io.Reader) (io.ReadCloser, err
 		return nil, err
 	}
 	resp, err := http.DefaultClient.Do(req)
-	c.trace(method, u.String())
-	c.trace(resp.Header)
 	if err != nil {
 		return nil, err
 	}
+	c.trace(method, u.String())
 	return resp.Body, nil
 }
 
@@ -79,6 +79,19 @@ func (c *Client) get(endpoint string, target interface{}) error {
 	defer r.Close()
 	buf := new(bytes.Buffer)
 	err = json.NewDecoder(io.TeeReader(r, buf)).Decode(&target)
+	c.trace("response", endpoint, string(buf.Bytes()))
+	return err
+}
+
+func (c *Client) post(endpoint string, args map[string]interface{}, result interface{}) error {
+	body, err := json.Marshal(args)
+	r, err := c.do("POST", endpoint, bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+	buf := new(bytes.Buffer)
+	err = json.NewDecoder(io.TeeReader(r, buf)).Decode(&result)
 	c.trace("response", endpoint, string(buf.Bytes()))
 	return err
 }

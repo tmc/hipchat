@@ -16,16 +16,6 @@ type apiResponse struct {
 	StartIndex float64 `json:"startIndex,omitempty"`
 }
 
-type roomResponse struct {
-	*Room
-	*Error `json:"error"`
-}
-
-type userResponse struct {
-	*User
-	*Error `json:"error"`
-}
-
 func (a *apiResponse) IsError() bool {
 	return a.Error != nil
 }
